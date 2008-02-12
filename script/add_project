@@ -10,16 +10,26 @@ trace = false
 scm_options = {:interactive => true}
 
 ARGV.options do |opts|
-  opts.banner = "usage: cruise add <project-name> --url <URL> [subversion options]"
+  opts.banner = "usage: cruise add <project-name> --svn-url <URL> [subversion options]"
+  opts.banner << "\n       cruise add <project-name> --git-url <URL> [git options]"
 
   opts.separator ""
 
-  opts.on("-u", "--url url", String,
+  opts.on("-s", "--svn-url url", String,
           "The subversion url for the project (eg. svn://rubyforge.org/var/svn/cruisecontrolrb)") do |v|
     scm_options[:url] = v
+    scm_options[:svn] = true
   end
+  
+  opts.on("-g", "--git-url url", String,
+          "The git url for the project (eg. git://github.com/benburkert/cruisecontrolrb.git)") do |v|
+    scm_options[:url] = v
+    scm_options[:git] = true
+  end
+  
   opts.on("--username username", String, "Specify a username for source control") { |v| scm_options[:username] = v }
   opts.on("--password password", String, "Specify a password for source control") { |v| scm_options[:password] = v }
+  opts.on("-b", "--branch", String, "Specify a branch to track(git only)") { |v| scm_options[:branch] = v}
   opts.on('-t', '--trace', 'Print out exception stack traces') { trace = true }
 
   opts.separator ""
@@ -47,14 +57,21 @@ end
 puts "Adding project '#{project_name}' (this may take a while)..."
 
 begin 
-	require RAILS_ROOT + "/config/environment"
-	
-	source_control = Subversion.new(scm_options)
-	project = Project.new(project_name, source_control)
-	projects = Projects.load_all
-	projects << project
-	
-	if source_control.url =~ /^svn\+ssh\:\/\//
+  require RAILS_ROOT + "/config/environment"
+  
+  if scm_options.has_key?(:svn)
+    source_control = Subversion.new(scm_options)
+  elsif scm_options.has_key?(:git)
+    source_control = Git.new(scm_options)
+  else
+    raise "Unsupported SCM"
+  end
+  
+  project = Project.new(project_name, source_control)
+  projects = Projects.load_all
+  projects << project
+  
+  if source_control.url =~ /^svn\+ssh\:\/\//
     puts "IMPORTANT!!! - It looks like you are connecting to your repository with an svn+ssh connection.  " +
          "For cruise to build this project, you need to have set up authentication caching for ssh, see this article"
     puts "   http://subversion.tigris.org/faq.html#ssh-auth-cache"

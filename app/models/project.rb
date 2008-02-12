@@ -8,7 +8,7 @@ class Project
   end
 
   def self.read(dir, load_config = true)
-    @project_in_the_works = Project.new(File.basename(dir))
+    @project_in_the_works = Project.new(File.basename(dir), File.exists?("#{dir}/work/.git") ? Git.new : Subversion.new)
     begin
       @project_in_the_works.load_config if load_config
       return @project_in_the_works

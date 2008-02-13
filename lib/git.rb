@@ -45,13 +45,25 @@ class Git
   def latest_revision
     GitRevision.new(repo.commits.first)
   end
+
+  def update_origin
+    repo.git.remote({}, "update")
+    repo.git.log({}, "HEAD..origin/#{@branch}").strip
+  end
+  def reset_from_remote
+    Dir.chdir(path) do
+      repo.git.reset({}, "--hard", "origin/#{@branch}")
+    end
+  end
   
   def update(revision = nil)
-    repo.git.pull({}, @repository, @branch)
+    update_origin
+    reset_from_remote
   end
   
   def up_to_date?(reasons = [], revision_number = latest_revision.number)
-    return true if update == "Already up-to-date.\n"
+    return true if update_origin.empty?
+    reset_from_remote
     reasons << "New revision #{latest_revision.number} detected"
     reasons << latest_revision
     false

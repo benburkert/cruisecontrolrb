@@ -437,9 +437,15 @@ class Project
 	build.time
     end
   end
+
+  MAX_BUILD_LABEL_LENGTH = 15
     
   def create_build_label(revision_number)
     revision_number = revision_number.to_s
+    if revision_number.length > MAX_BUILD_LABEL_LENGTH
+	revision_number = revision_number[0, MAX_BUILD_LABEL_LENGTH] + '...'
+    end
+
     build_labels = builds.map { |b| b.label }
     related_builds_pattern = Regexp.new("^#{Regexp.escape(revision_number)}(\\.\\d+)?$")
     related_builds = build_labels.select { |label| label =~ related_builds_pattern }
@@ -448,7 +454,12 @@ class Project
     when [] then revision_number
     when [revision_number] then "#{revision_number}.1"
     else
-      rebuild_numbers = related_builds.map { |label| label.split('.')[1] }.compact
+      rebuild_numbers = related_builds.map do |label| 
+	  if label =~ /\.(\d+)$/
+	      Integer($1)
+	  end
+      end.compact
+
       last_rebuild_number = rebuild_numbers.sort_by { |x| x.to_i }.last 
       "#{revision_number}.#{last_rebuild_number.next}"
     end

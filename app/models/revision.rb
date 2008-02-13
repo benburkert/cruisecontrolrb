@@ -4,7 +4,7 @@ class Revision
   attr_reader :number, :committed_by, :time, :message, :changeset 
 
   def initialize(number, committed_by = nil, time = nil, message = nil, changeset = nil)
-    @number = number.to_i
+    @number = number
     @committed_by, @time, @message, @changeset = committed_by, time, message, changeset
   end
 
@@ -25,10 +25,6 @@ Revision #{number} committed by #{committed_by} on #{time.strftime('%Y-%m-%d %H:
     @number == other.number
   end
 
-  def to_i
-    @number
-  end
-  
   def inspect
     "Revision(#{number})"
   end

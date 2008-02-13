@@ -138,7 +138,7 @@ class Project
       build_label = build_directory.split("-")[1]
       Build.new(self, build_label)
     end
-    order_by_label(the_builds)
+    order_builds(the_builds)
   end
 
   def builder_state_and_activity
@@ -432,11 +432,9 @@ class Project
   private
   
   # sorts a array of builds in order of revision number and rebuild number 
-  def order_by_label(builds)
+  def order_builds(builds)
     builds.sort_by do |build|
-      number, rebuild = build.label.split('.')
-      # when a label only has build number, rebuild = nil, nil.to_i = 0, and this code still works
-      [number.to_i, rebuild.to_i]
+	build.time
     end
   end
     

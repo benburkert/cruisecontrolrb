@@ -5,11 +5,19 @@ class GitRevision < Revision
   attr_accessor :commit
   
   def initialize(commit)
-    @commit = commit
+      @commit = commit
   end
   
   def number
-    @commit.id
+      @commit.id
+  end
+
+  def author
+      @commit.author
+  end
+
+  def time
+      @commit.authored_date
   end
 end
 

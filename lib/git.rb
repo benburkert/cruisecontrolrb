@@ -5,28 +5,28 @@ class GitRevision < Revision
   attr_accessor :commit
   
   def initialize(commit)
-      @commit = commit
+    @commit = commit
   end
   
   def number
-      @commit.id
+    @commit.id
   end
-
+  
   def author
-      @commit.author
+    @commit.author
   end
-
+  
   def time
-      @commit.authored_date
+    @commit.authored_date
   end
 end
 
 class Git
   include Grit
   include CommandLine
-
+  
   attr_accessor :url, :path, :username, :password, :branch
-
+  
   def initialize(options = {})
     @url = options.delete(:url)
     @path = options.delete(:path) || "."

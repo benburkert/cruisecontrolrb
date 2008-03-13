@@ -4,3 +4,6 @@
 		Adding project 'another_project' (this may take a while)...
 		cruise data root = '/Users/.../.cruise'
 		FAILED: don't know how to handle 'svn'
+ - Modify README to reference Ben Burkett's Git Repo (installation)
+ - Add minimal INSTALL document to document adding new git/svn projects
+ - Add usage document to describe starting CruiseControl.rb (./cruise start)

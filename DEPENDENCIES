@@ -1,0 +1,4 @@
+== For git support
+To setup git projects, you'll need the following gems:
+ * grit
+ * mime-types

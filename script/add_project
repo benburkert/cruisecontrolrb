@@ -60,6 +60,7 @@ begin
   require RAILS_ROOT + "/config/environment"
   
   if scm_options.has_key?(:svn)
+    scm_options.delete(:svn)
     source_control = Subversion.new(scm_options)
   elsif scm_options.has_key?(:git)
     source_control = Git.new(scm_options)

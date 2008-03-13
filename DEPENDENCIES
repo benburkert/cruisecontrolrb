@@ -1,4 +1,9 @@
 == For git support
-To setup git projects, you'll need the following gems:
+
+You'll need Git:
+ * http://git.or.cz/#download for instructions
+
+To the following gems:
  * grit
  * mime-types
+

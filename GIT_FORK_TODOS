@@ -1,9 +1,6 @@
- - Make adding svn projects work again:
-		./cruise add another_project --svn-url <svn-url>
-		cruise data root = '/Users/../.cruise'
-		Adding project 'another_project' (this may take a while)...
-		cruise data root = '/Users/.../.cruise'
-		FAILED: don't know how to handle 'svn'
- - Modify README to reference Ben Burkett's Git Repo (installation)
- - Add minimal INSTALL document to document adding new git/svn projects
+ - Modify README to indicate that this is a fork documenting changes:
+   - Git support
+   - What else?
+
+ - Add minimal INSTALL document to reference Ben Burkett's Git Repo, document adding new git/svn projects
  - Add usage document to describe starting CruiseControl.rb (./cruise start)

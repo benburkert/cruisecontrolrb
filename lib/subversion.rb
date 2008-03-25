@@ -55,7 +55,7 @@ class Subversion
 
   def last_locally_known_revision
     return Revision.new(0) unless File.exist?(path)
-    Revision.new(info.last_changed_revision)
+    Revision.new(info.revision)
   end
 
   def latest_revision
@@ -67,7 +67,7 @@ class Subversion
     result = true
     
     latest_revision = self.latest_revision()
-    if latest_revision != Revision.new(revision_number)
+    if latest_revision > Revision.new(revision_number)
       reasons << "New revision #{latest_revision.number} detected"
       reasons << revisions_since(revision_number)
       result = false
@@ -76,7 +76,9 @@ class Subversion
     if @check_externals
       externals.each do |ext_path, ext_url|
         ext_logger = ExternalReasons.new(ext_path, reasons)
-        ext_svn = Subversion.new(:path => File.join(self.path, ext_path), :url => ext_url)
+        ext_svn = Subversion.new(:path => File.join(self.path, ext_path), 
+                                 :url => ext_url, 
+                                 :check_externals => false)
         result = false unless ext_svn.up_to_date?(ext_logger)
       end
     end
@@ -102,7 +104,8 @@ class Subversion
   def revisions_since(revision_number)
     svn_output = log('HEAD', revision_number)
     log_parser = Subversion::LogParser.new
-    log_parser.parse(svn_output)
+    revisions = log_parser.parse(svn_output)
+    revisions.reject {|revision| revision.number == revision_number} # cut out the revision that was asked for
   end
 
   def log(from, to, arguments = [])
@@ -110,7 +113,7 @@ class Subversion
   end
   
   def info
-    svn_output = svn('info', ["--xml"])
+    svn_output = svn('info', ["--xml"])    
     Subversion::InfoParser.new.parse(svn_output)
   end
 

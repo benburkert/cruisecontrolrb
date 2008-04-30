@@ -36,6 +36,7 @@ class Git
     @error_log = options.delete(:error_log)
     @branch = options.delete(:branch) || "master"
     @repository = options.delete(:repository) || "origin"
+    @include_submodules = true
   end
   
   def repo
@@ -50,9 +51,13 @@ class Git
     repo.git.remote({}, "update")
     repo.git.log({}, "HEAD..origin/#{@branch}").strip
   end
+  
   def reset_from_remote
     Dir.chdir(path) do
       repo.git.reset({}, "--hard", "origin/#{@branch}")
+      if @include_submodules
+        repo.git.submodule({},'update')
+      end
     end
   end
   
@@ -76,6 +81,10 @@ class Git
   def clone(stdout = $stdout)
     FileUtils.rm_rf(path) if File.exists?(@path)
     git("clone", [@url, @path], :execute_locally => false)
+    if @include_submodules
+        git("submodule",["init"])
+        git("submodule",["update"])
+    end
   end
   
   def git(operation, arguments, options = {}, &block)

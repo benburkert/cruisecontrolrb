@@ -2,30 +2,31 @@ require 'rubygems'
 require 'grit'
 
 class GitRevision < Revision
-  attr_accessor :commit
+  attr_accessor :commit,:message
   
   def initialize(commit)
     @commit = commit
   end
   
   def number
-    @commit.id
+    @commit.id_abbrev
   end
   
-  def author
+  def committed_by
     @commit.author
   end
   
   def time
     @commit.authored_date
   end
+  
 end
 
 class Git
   include Grit
   include CommandLine
   
-  attr_accessor :url, :path, :username, :password, :branch
+  attr_accessor :url, :path, :username, :password, :branch, :project
   
   def initialize(options = {})
     @url = options.delete(:url)
@@ -44,7 +45,11 @@ class Git
   end
   
   def latest_revision
-    GitRevision.new(repo.commits.first)
+    revision = GitRevision.new(repo.commits.first)
+    build = Build.new(@project,revision.number)
+    last_build = @project.last_complete_build || build
+    revision.message = repo.git.log({},"--pretty=oneline --abbrev-commit  #{last_build.revision}..#{build.revision}")
+    revision
   end
 
   def update_origin
@@ -69,7 +74,7 @@ class Git
   def up_to_date?(reasons = [], revision_number = latest_revision.number)
     return true if update_origin.empty?
     reset_from_remote
-    reasons << "New revision #{latest_revision.number} detected"
+#    reasons << "New revision #{latest_revision.number} detected"
     reasons << latest_revision
     false
   end

@@ -39,6 +39,7 @@ class Project
     @error_message = ''
     @triggers = [ChangeInSourceControlTrigger.new(self)]
     instantiate_plugins
+    scm.project = self if scm.respond_to? :project=
   end
   
   def source_control=(value)
@@ -443,7 +444,7 @@ class Project
   def create_build_label(revision_number)
     revision_number = revision_number.to_s
     if revision_number.length > MAX_BUILD_LABEL_LENGTH
-	revision_number = revision_number[0, MAX_BUILD_LABEL_LENGTH] + '...'
+	      revision_number = revision_number[0, MAX_BUILD_LABEL_LENGTH] + '...'
     end
 
     build_labels = builds.map { |b| b.label }
@@ -490,7 +491,7 @@ def plugin_loader.load_plugin(plugin_path)
   plugin_is_directory = (plugin_file == 'init')  
   plugin_name = plugin_is_directory ? File.basename(File.dirname(plugin_path)) : plugin_file
 
-  CruiseControl::Log.debug("Loading plugin #{plugin_name}")
+  CruiseControl::Log.info("Loading plugin #{plugin_name}")
   if RAILS_ENV == 'development'
     load plugin_path
   else
@@ -515,7 +516,7 @@ def plugin_loader.load_all
       if File.file?(init_path)
         load_plugin(init_path)
       else
-        log.error("No init.rb found in plugin directory #{plugin}")
+        CruiseControl::Log.error("No init.rb found in plugin directory #{plugin}")
       end
     else
       # a path is neither file nor directory. whatever else it may be, let's ignore it.

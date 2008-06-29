@@ -16,6 +16,10 @@ class GitRevision < Revision
     @commit.author
   end
   
+	def committed_by
+    @commit.committer
+	end
+
   def time
     @commit.authored_date
   end

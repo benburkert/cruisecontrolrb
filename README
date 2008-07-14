@@ -1,5 +1,15 @@
 == CruiseControl.rb
 
+This is a fork of CruiseControl.rb that supports the git SCM.  You'll need git installed to download this fork.
+
+=== github URL
+
+* git://github.com/benburkert/cruisecontrolrb.git
+
+=== Download from github
+
+Type the following command to download the source
+git clone git://github.com/benburkert/cruisecontrolrb.git
 
 === What's this?
 
@@ -7,7 +17,6 @@ CruiseControl.rb is a continuous integration tool. Its basic purpose in life is 
 when one of them checks into a source control system something that breaks the build.
 
 CC.rb is easy to install, pleasant to use and simple to hack. It's written in Ruby.
-
 
 ===Download the latest release from:
 

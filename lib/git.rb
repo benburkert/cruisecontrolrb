@@ -49,7 +49,7 @@ class Git
   end
   
   def latest_revision
-    revision = GitRevision.new(repo.commits.first)
+    revision = GitRevision.new(repo.commits(@branch).first)
     build = Build.new(@project,revision.number)
     last_build = @project.last_complete_build || build
     revision.message = repo.git.log({},"--pretty=oneline --abbrev-commit  #{last_build.revision}..#{build.revision}")
